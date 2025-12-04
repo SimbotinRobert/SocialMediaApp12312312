@@ -1,0 +1,52 @@
+<h1>Profilul tău</h1>
+<h2>Bine ai venit, {{ user.username }}</h2>
+
+{% if profile.profile_picture %}
+    <img src="{{ profile.profile_picture.url }}" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;">
+{% endif %}
+
+<hr>
+<h3>Detalii Cont:</h3>
+<p><strong>Nume de utilizator:</strong> {{ user.username }}</p>
+<p><strong>Email:</strong> {{ user.email }}</p>
+
+<h3>Biografie:</h3>
+{% if profile.bio %}
+    <p>{{ profile.bio }}</p>
+{% else %}
+    <p>Nu ai încă o biografie adăugată.</p>
+{% endif %}
+
+<p>
+    <a href="{% url 'feed:edit_profile' %}">✏️ Editează Profilul</a>
+</p>
+
+<hr>
+<p><a href="{% url 'feed:feed' %}">Înapoi la Feed</a></p>
+
+<hr>
+
+<h2>Postările Tale ({{ user_posts.count }} în total)</h2>
+
+{% if user_posts %}
+    {% for post in user_posts %}
+        <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 15px;">
+            <h4>{{ post.post_name }}</h4>
+
+            {% if post.image %}
+                <img src="{{ post.image.url }}" style="max-width: 200px; height: auto;">
+                <br>
+            {% endif %}
+
+            <p>{{ post.post_content }}</p>
+            <small>Publicat la: {{ post.pub_date }}</small>
+
+            <form method="POST" action="{% url 'feed:delete_post' pk=post.pk %}" style="margin-top: 10px;">
+                {% csrf_token %}
+                <button type="submit" style="color: red;">❌ Șterge</button>
+            </form>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>Nu ai postat încă nimic. <a href="{% url 'feed:create_post' %}">Creează prima postare!</a></p>
+{% endif %}

@@ -1,0 +1,12 @@
+<h1>Logare</h1>
+<p>Completează câmpurile de mai jos pentru a te loga.</p>
+
+<form method="POST">
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">Loghează-te</button>
+</form>
+
+<p>Nu ai cont? <a href="{% url 'feed:register' %}">Înregistrează-te aici.</a></p>

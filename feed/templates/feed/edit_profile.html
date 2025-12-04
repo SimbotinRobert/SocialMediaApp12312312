@@ -1,0 +1,9 @@
+<h1>Editează Profilul</h1>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Salvează Modificările</button>
+</form>
+
+<p><a href="{% url 'feed:profile' %}">Anulează</a></p>

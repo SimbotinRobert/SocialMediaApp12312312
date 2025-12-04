@@ -1,0 +1,73 @@
+{% if user.is_authenticated %}
+    <p>Ești logat ca: <strong><a href="{% url 'feed:profile' %}">{{ user.username }}</a></strong></p>
+
+    <h2><a href="{% url 'feed:create_post' %}">✏️ Creează Postare Nouă</a></h2>
+
+    <p>
+        <a href="{% url 'feed:logout' %}">➡️ Delogare</a>
+    </p>
+
+{% else %}
+    <p>
+        <a href="{% url 'feed:register' %}">⭐ Înregistrare</a> |
+        <a href="{% url 'feed:login' %}">🔑 Logare</a>
+    </p>
+{% endif %}
+
+<hr>
+
+<h1>Feed</h1>
+
+{% if posts %}
+    {% for post in posts %}
+        <div class="postare" style="border-bottom: 1px solid #ccc; margin-bottom: 15px; padding-bottom: 15px;">
+
+            <h3>{{ post.post_name }}</h3>
+
+            {% if post.image %}
+                <img src="{{ post.image.url }}" style="max-width: 100%; height: auto; margin-bottom: 10px;">
+                <br>
+            {% endif %}
+
+            <p>{{ post.post_content }}</p>
+
+            <small>
+                de: @<a href="{% url 'feed:public_profile' username=post.user.username %}">{{ post.user.username }}</a>
+                | la: {{ post.pub_date }}
+            </small>
+
+            <div style="margin-top: 10px; padding-bottom: 5px;">
+                <a href="{% url 'feed:like_post' pk=post.pk %}" style="margin-right: 15px;">👍 Like</a>
+                <a href="{% url 'feed:dislike_post' pk=post.pk %}">👎 Dislike</a>
+
+                <span style="font-weight: bold; margin-left: 15px;">
+                    Scor: {{ post.total_score|default:'0' }}
+                </span>
+            </div>
+
+            <div style="margin-top: 20px; background-color: #f9f9f9; padding: 10px;">
+                <h4>Comentarii ({{ post.comment_set.count }})</h4>
+
+                {% for comment in post.comment_set.all %}
+                    <div style="border-left: 3px solid #007bff; padding-left: 10px; margin-bottom: 5px;">
+                        <strong>{{ comment.user.username }}:</strong> {{ comment.text }}
+                        <small style="color: #6c757d; float: right;">{{ comment.created_at|date:"H:i" }}</small>
+                    </div>
+                {% empty %}
+                    <p>Fii primul care comentează!</p>
+                {% endfor %}
+
+                {% if user.is_authenticated %}
+                    <form method="POST" action="{% url 'feed:add_comment' pk=post.pk %}" style="margin-top: 10px;">
+                        {% csrf_token %}
+                        <input type="text" name="text" placeholder="Scrie un comentariu..." required style="width: 70%; padding: 5px;">
+                        <button type="submit" style="padding: 5px 10px;">Comentează</button>
+                    </form>
+                {% endif %}
+            </div>
+            </div>
+    {% endfor %}
+
+{% else %}
+    <p>Nu există postări de afișat.</p>
+{% endif %}

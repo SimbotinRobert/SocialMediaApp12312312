@@ -1,0 +1,13 @@
+<h1>Creează o postare nouă</h1>
+<p>Publici ca: <strong>{{ user.username }}</strong></p>
+
+<form method="POST" enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">Publică Postarea</button>
+</form>
+
+<p><a href="{% url 'feed:feed' %}">Anulează și mergi la feed</a></p>

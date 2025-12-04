@@ -1,0 +1,12 @@
+<h1>Creează Cont Nou</h1>
+<p>Completează câmpurile pentru a te înregistra.</p>
+
+<form method="POST">
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">Înregistrare</button>
+</form>
+
+<p>Ai deja cont? <a href="{% url 'feed:login' %}">Loghează-te</a></p>

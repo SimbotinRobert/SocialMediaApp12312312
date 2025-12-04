@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profilul lui {{ target_user.username }}</title>
+</head>
+<body>
+
+    <h1>Profilul lui @{{ target_user.username }}</h1>
+
+    {% if target_profile.profile_picture %}
+        <img src="{{ target_profile.profile_picture.url }}"
+             style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-bottom: 20px;">
+    {% endif %}
+    <hr>
+
+    <h3>Biografie:</h3>
+    <p>
+        {% if target_profile.bio %}
+            {{ target_profile.bio }}
+        {% else %}
+            (Acest utilizator nu are încă o biografie.)
+        {% endif %}
+    </p>
+
+    <hr>
+
+    <h2>Postări Recente ({{ posts.count }} în total)</h2>
+
+    {% if target_posts %}
+        {% for post in target_posts %}
+            <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px;">
+                <h3>{{ post.post_name }}</h3>
+
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" style="max-width: 300px; height: auto; margin-bottom: 10px;">
+                    <br>
+                {% endif %}
+
+                <p>{{ post.post_content }}</p>
+
+                <small>Publicat la: {{ post.pub_date }}</small>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>{{ target_user.username }} nu a postat încă nimic.</p>
+    {% endif %}
+
+    <hr>
+
+    <p>
+        <a href="{% url 'feed:feed' %}">⬅️ Înapoi la Feed</a>
+    </p>
+
+</body>
+</html>
