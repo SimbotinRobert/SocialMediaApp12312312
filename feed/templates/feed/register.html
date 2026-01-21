@@ -1,12 +1,171 @@
-<h1>Creează Cont Nou</h1>
-<p>Completează câmpurile pentru a te înregistra.</p>
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Înregistrare</title>
+    <style>
+        body { background-color: #121212; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; line-height: 1.6; }
+        a { text-decoration: none; color: #8ab4f8; }
+        .navbar { background-color: #1e1e1e; padding: 15px 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #333; }
+        .container { max-width: 500px; margin: 50px auto; padding: 0 15px; }
+        .form-card { background-color: #1e1e1e; border-radius: 12px; padding: 40px 30px; border: 1px solid #333; }
+        h1 { margin-top: 0; color: #fff; text-align: center; }
+        .subtitle { text-align: center; color: #aaa; margin-bottom: 30px; }
 
-<form method="POST">
-    {% csrf_token %}
+        form p { margin-bottom: 20px; }
+        form label { display: block; margin-bottom: 8px; color: #bb86fc; font-weight: bold; }
 
-    {{ form.as_p }}
+        form input[type="text"], form input[type="email"], form input[type="password"] {
+            width: 100%; padding: 12px; background-color: #2c2c2c;
+            border: 1px solid #444; border-radius: 8px; color: white;
+            font-size: 1rem; box-sizing: border-box;
+        }
+        form input:focus { outline: none; border-color: #bb86fc; background-color: #383838; }
 
-    <button type="submit">Înregistrare</button>
-</form>
+        .password-wrapper {
+            position: relative; /
+            width: 100%;
+        }
 
-<p>Ai deja cont? <a href="{% url 'feed:login' %}">Loghează-te</a></p>
+        .password-wrapper input {
+            padding-right: 40px !important;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #888;
+            background: none;
+            border: none;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .helptext {
+    display: none;
+}
+
+        .toggle-password:hover {
+            color: #bb86fc;
+        }
+
+        .toggle-password svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .errorlist { list-style: none; padding: 0; color: #cf6679; font-weight: bold; }
+        .submit-btn { width: 100%; padding: 12px; background-color: #bb86fc; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        #js-errors { background-color: rgba(207, 102, 121, 0.1); border: 1px solid #cf6679; color: #cf6679; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: none; }
+        .extra-links { text-align: center; margin-top: 25px; border-top: 1px solid #333; padding-top: 20px; color: #888; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="brand"><a href="{% url 'feed:feed' %}" style="color:white;">Site</a></div>
+        <div class="actions"><a href="{% url 'feed:login' %}">Logare</a></div>
+    </nav>
+
+    <div class="container">
+        <div class="form-card">
+            <h1>Creează Cont Nou</h1>
+            <p class="subtitle">Alătură-te comunității noastre!</p>
+
+            <form method="POST" id="registerForm">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <ul class="errorlist">
+                        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+
+                {{ form.as_p }}
+
+                <div id="js-errors"></div>
+
+                <button type="submit" class="submit-btn">Înregistrare</button>
+            </form>
+
+            <div class="extra-links">
+                Ai deja un cont? <br>
+                <a href="{% url 'feed:login' %}">Loghează-te aici</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const iconEye = `<svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`;
+            const iconEyeSlash = `<svg viewBox="0 0 24 24"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.45-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46A11.804 11.804 0 0 0 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>`;
+
+            const passwordInputs = document.querySelectorAll('input[type="password"]');
+
+            passwordInputs.forEach(function(input) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'password-wrapper';
+
+                input.parentNode.insertBefore(wrapper, input);
+
+                wrapper.appendChild(input);
+
+
+                const toggleBtn = document.createElement('span');
+                toggleBtn.className = 'toggle-password';
+                toggleBtn.innerHTML = iconEye;
+
+                toggleBtn.addEventListener('click', function() {
+                    if (input.type === "password") {
+                        input.type = "text";
+                        toggleBtn.innerHTML = iconEyeSlash;
+                    } else {
+                        input.type = "password";
+                        toggleBtn.innerHTML = iconEye;
+                    }
+                });
+
+                wrapper.appendChild(toggleBtn);
+            });
+
+            const form = document.getElementById('registerForm');
+            const errorContainer = document.getElementById('js-errors');
+
+            form.addEventListener('submit', function(e) {
+                const passInputsRef = form.querySelectorAll('input:not([type="hidden"])');
+                const protectedInputs = form.querySelectorAll('.password-wrapper input');
+
+                if (protectedInputs.length < 2) return;
+
+                const pass1 = protectedInputs[0];
+                const pass2 = protectedInputs[1];
+
+                let errors = [];
+
+                if (pass1.value.length < 8) errors.push("Parola trebuie să aibă minim 8 caractere.");
+                if (/^\d+$/.test(pass1.value)) errors.push("Parola nu poate fi compusă doar din cifre.");
+                if (pass1.value !== pass2.value) errors.push("Parolele nu coincid.");
+
+                if (errors.length > 0) {
+                    e.preventDefault();
+                    let htmlErrors = "<ul>";
+                    errors.forEach(err => htmlErrors += "<li>" + err + "</li>");
+                    htmlErrors += "</ul>";
+                    errorContainer.innerHTML = htmlErrors;
+                    errorContainer.style.display = 'block';
+                } else {
+                    errorContainer.style.display = 'none';
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,13 +1,167 @@
-<h1>Creează o postare nouă</h1>
-<p>Publici ca: <strong>{{ user.username }}</strong></p>
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postare Nouă</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
 
-<form method="POST" enctype="multipart/form-data">
+        a { text-decoration: none; color: #8ab4f8; transition: color 0.2s; }
+        a:hover { color: #d2e3fc; }
 
-    {% csrf_token %}
+        .navbar {
+            background-color: #1e1e1e;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .navbar .user-info { font-size: 0.95rem; }
+        .navbar .actions a { margin-left: 15px; font-weight: bold; }
 
-    {{ form.as_p }}
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 15px;
+        }
 
-    <button type="submit">Publică Postarea</button>
-</form>
+        .form-card {
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            border: 1px solid #333;
+        }
 
-<p><a href="{% url 'feed:feed' %}">Anulează și mergi la feed</a></p>
+        h1 { text-align: center; color: #fff; margin-top: 0; }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+
+        form p {
+            margin-bottom: 20px;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            color: #bb86fc;
+            font-weight: bold;
+        }
+
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="password"],
+        form textarea,
+        form select {
+            width: 100%;
+            padding: 12px;
+            background-color: #2c2c2c;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        form input:focus, form textarea:focus {
+            outline: none;
+            border-color: #bb86fc;
+            background-color: #383838;
+        }
+
+        form textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        form input[type="file"] {
+            background-color: #2c2c2c;
+            padding: 10px;
+            border-radius: 8px;
+            width: 100%;
+            color: #aaa;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #bb86fc;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #a370f7;
+        }
+
+        .cancel-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .cancel-link:hover {
+            color: #fff;
+        }
+
+        .helptext {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 4px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="user-info">
+            Salut, <strong>{{ user.username }}</strong>
+        </div>
+        <div class="actions">
+            <a href="{% url 'feed:feed' %}">Înapoi la Feed</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-card">
+            <h1>Creează o postare</h1>
+            <p class="subtitle">Împărtășește ceva nou cu comunitatea.</p>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {{ form.as_p }}
+
+                <button type="submit" class="submit-btn">Publică Postarea</button>
+            </form>
+
+            <a href="{% url 'feed:feed' %}" class="cancel-link">Anulează și mergi la feed</a>
+        </div>
+    </div>
+
+</body>
+</html>

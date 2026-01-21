@@ -7,6 +7,10 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseForbidden
 from .models import Post, Profile, Vote
 from django.db.models import F,Sum
+from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, authenticate
+from .models import Comment
 
 @login_required(login_url='feed:register')
 def feed(request):
@@ -18,12 +22,27 @@ def register_user(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            login(request,user)
         return redirect('feed:feed')
     else:
         form = UserCreationForm()
 
     return render(request, 'feed/register.html', {'form': form})
+
+def login_user(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('feed:feed')
+        else:
+            messages.error(request, "Nume de utilizator sau parolă incorectă!")
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'feed/login.html', {'form': form})
 
 def logout_user(request):
     logout(request)
@@ -46,7 +65,7 @@ def create_post(request):
 @login_required
 def view_profile(request):
     profile,created = Profile.objects.get_or_create(user=request.user)
-    user_posts = Post.objects.filter(user=request.user).order_by('-pub_date')
+    user_posts = Post.objects.filter(user=request.user).annotate(total_score=Sum('vote__value')).order_by('-pub_date')
     context = {'profile': profile,'user': request.user,'user_posts': user_posts}
     return render(request, 'feed/profile.html', context)
 
@@ -105,6 +124,7 @@ def vote_post(request, pk,vote_type):
 
 @login_required()
 def add_comment(request,pk):
+    previous_page = request.META.get('HTTP_REFERER')
     post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
         form = CommentForm(request.POST)
@@ -113,5 +133,26 @@ def add_comment(request,pk):
             comment.user = request.user
             comment.post = post
             comment.save()
+            if previous_page:
+                return redirect(previous_page)
             return redirect('feed:feed')
+
+    if previous_page:
+        return redirect(previous_page)
+
+    return redirect('feed:feed')
+
+
+@login_required
+def delete_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+
+    if request.user == comment.user:
+        comment.delete()
+
+    previous_page = request.META.get('HTTP_REFERER')
+
+    if previous_page:
+        return redirect(previous_page)
+
     return redirect('feed:feed')

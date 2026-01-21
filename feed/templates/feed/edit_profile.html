@@ -1,9 +1,167 @@
-<h1>Editează Profilul</h1>
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editează Profilul</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Salvează Modificările</button>
-</form>
+        a { text-decoration: none; color: #8ab4f8; transition: color 0.2s; }
+        a:hover { color: #d2e3fc; }
 
-<p><a href="{% url 'feed:profile' %}">Anulează</a></p>
+        .navbar {
+            background-color: #1e1e1e;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .navbar .brand { font-weight: bold; color: #fff; }
+        .navbar .actions a { margin-left: 15px; font-weight: bold; }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 15px;
+        }
+
+        .form-card {
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            border: 1px solid #333;
+        }
+
+        h1 { margin-top: 0; color: #fff; text-align: center; }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        form p { margin-bottom: 20px; }
+
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            color: #bb86fc;
+            font-weight: bold;
+        }
+
+
+        form input[type="text"],
+        form input[type="email"],
+        form textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: #2c2c2c;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        form input:focus, form textarea:focus {
+            outline: none;
+            border-color: #bb86fc;
+            background-color: #383838;
+        }
+
+        form textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+
+        form input[type="file"] {
+            background-color: #2c2c2c;
+            padding: 10px;
+            border-radius: 8px;
+            width: 100%;
+            color: #aaa;
+            border: 1px solid #444;
+            cursor: pointer;
+        }
+
+        form a {
+            color: #03dac6;
+        }
+
+        form input[type="checkbox"] {
+            accent-color: #bb86fc;
+            transform: scale(1.2);
+            margin-right: 10px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #bb86fc;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #a370f7;
+        }
+
+        .cancel-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+        }
+        .cancel-link:hover { color: #fff; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="brand">
+            <a href="{% url 'feed:feed' %}" style="color:white;">Site</a>
+        </div>
+        <div class="actions">
+            <a href="{% url 'feed:profile' %}">Înapoi la Profil</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-card">
+            <h1>Editează Profilul</h1>
+            <p class="subtitle">Actualizează-ți informațiile personale.</p>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {{ form.as_p }}
+
+                <button type="submit" class="submit-btn">Salvează Modificările</button>
+            </form>
+
+            <a href="{% url 'feed:profile' %}" class="cancel-link">Anulează</a>
+        </div>
+    </div>
+
+</body>
+</html>

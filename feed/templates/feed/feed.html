@@ -1,73 +1,314 @@
-{% if user.is_authenticated %}
-    <p>Ești logat ca: <strong><a href="{% url 'feed:profile' %}">{{ user.username }}</a></strong></p>
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed Postări</title>
+    <style>
 
-    <h2><a href="{% url 'feed:create_post' %}">✏️ Creează Postare Nouă</a></h2>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
 
-    <p>
-        <a href="{% url 'feed:logout' %}">➡️ Delogare</a>
-    </p>
+        a {
+            text-decoration: none;
+            color: #8ab4f8;
+            transition: color 0.2s;
+        }
 
-{% else %}
-    <p>
-        <a href="{% url 'feed:register' %}">⭐ Înregistrare</a> |
-        <a href="{% url 'feed:login' %}">🔑 Logare</a>
-    </p>
-{% endif %}
+        a:hover {
+            color: #d2e3fc;
+        }
 
-<hr>
+        .navbar {
+            background-color: #1e1e1e;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
 
-<h1>Feed</h1>
+        .navbar .user-info {
+            font-size: 0.95rem;
+        }
 
-{% if posts %}
-    {% for post in posts %}
-        <div class="postare" style="border-bottom: 1px solid #ccc; margin-bottom: 15px; padding-bottom: 15px;">
+        .navbar .actions a {
+            margin-left: 15px;
+            font-weight: bold;
+        }
 
-            <h3>{{ post.post_name }}</h3>
+        .create-btn {
+            background-color: #bb86fc;
+            color: #000 !important;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
 
-            {% if post.image %}
-                <img src="{{ post.image.url }}" style="max-width: 100%; height: auto; margin-bottom: 10px;">
-                <br>
+        .create-btn:hover {
+            background-color: #a370f7;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ffffff;
+        }
+
+        .post-card {
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            border: 1px solid #333;
+        }
+
+        .post-title {
+            margin-top: 0;
+            color: #ffffff;
+            font-size: 1.4rem;
+        }
+
+        .post-meta {
+            font-size: 0.85rem;
+            color: #a0a0a0;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .post-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #333;
+        }
+
+        .post-content {
+            font-size: 1rem;
+            color: #d1d1d1;
+            margin: 15px 0;
+        }
+
+        .action-bar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px 0;
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
+            margin-top: 15px;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            background-color: #2c2c2c;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .btn-action:hover {
+            background-color: #3d3d3d;
+            color: #fff;
+        }
+
+        .score-badge {
+            margin-left: auto;
+            background-color: #333;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .comments-section {
+            background-color: #161616;
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .comments-title {
+            margin-top: 0;
+            font-size: 1rem;
+            color: #bbb;
+            margin-bottom: 15px;
+        }
+
+        .single-comment {
+            border-left: 3px solid #bb86fc;
+            padding-left: 12px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .single-comment strong {
+            color: #bb86fc;
+        }
+
+        .comment-time {
+            color: #666;
+            font-size: 0.75rem;
+            float: right;
+        }
+
+        .comment-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .comment-input {
+            flex-grow: 1;
+            background-color: #2c2c2c;
+            border: 1px solid #444;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #bb86fc;
+        }
+
+        .comment-btn {
+            background-color: #03dac6;
+            color: #000;
+            border: none;
+            padding: 0 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .comment-btn:hover {
+            background-color: #01bdae;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="user-info">
+            {% if user.is_authenticated %}
+                Salut, <strong><a href="{% url 'feed:profile' %}" style="color: #fff;">{{ user.username }}</a></strong>
+            {% else %}
+                Vizitator
             {% endif %}
+        </div>
+        <div class="actions">
+            {% if user.is_authenticated %}
+                <a href="{% url 'feed:create_post' %}" class="create-btn">Postare Nouă</a>
+                <a href="{% url 'feed:logout' %}">Delogare</a>
+            {% else %}
+                <a href="{% url 'feed:register' %}">Înregistrare</a>
+                <a href="{% url 'feed:login' %}">Logare</a>
+            {% endif %}
+        </div>
+    </nav>
 
-            <p>{{ post.post_content }}</p>
+    <div class="container">
+        <h1>Feed Principal</h1>
+        <hr style="border-color: #333; margin-bottom: 30px;">
 
-            <small>
-                de: @<a href="{% url 'feed:public_profile' username=post.user.username %}">{{ post.user.username }}</a>
-                | la: {{ post.pub_date }}
-            </small>
+        {% if posts %}
+            {% for post in posts %}
+                <div class="post-card">
 
-            <div style="margin-top: 10px; padding-bottom: 5px;">
-                <a href="{% url 'feed:like_post' pk=post.pk %}" style="margin-right: 15px;">👍 Like</a>
-                <a href="{% url 'feed:dislike_post' pk=post.pk %}">👎 Dislike</a>
+                    <h3 class="post-title">{{ post.post_name }}</h3>
 
-                <span style="font-weight: bold; margin-left: 15px;">
-                    Scor: {{ post.total_score|default:'0' }}
-                </span>
-            </div>
+                    <small class="post-meta">
+                        Postat de: <strong><a href="{% url 'feed:public_profile' username=post.user.username %}">@{{ post.user.username }}</a></strong>
+                        • {{ post.pub_date }}
+                    </small>
 
-            <div style="margin-top: 20px; background-color: #f9f9f9; padding: 10px;">
-                <h4>Comentarii ({{ post.comment_set.count }})</h4>
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" class="post-image" alt="Imagine postare">
+                    {% endif %}
 
-                {% for comment in post.comment_set.all %}
-                    <div style="border-left: 3px solid #007bff; padding-left: 10px; margin-bottom: 5px;">
-                        <strong>{{ comment.user.username }}:</strong> {{ comment.text }}
-                        <small style="color: #6c757d; float: right;">{{ comment.created_at|date:"H:i" }}</small>
+                    <p class="post-content">{{ post.post_content }}</p>
+
+                    <div class="action-bar">
+                        <a href="{% url 'feed:like_post' pk=post.pk %}" class="btn-action">👍 Like</a>
+                        <a href="{% url 'feed:dislike_post' pk=post.pk %}" class="btn-action">👎 Dislike</a>
+
+                        <span class="score-badge">
+                            Scor: {{ post.total_score|default:'0' }}
+                        </span>
                     </div>
-                {% empty %}
-                    <p>Fii primul care comentează!</p>
-                {% endfor %}
 
+                    <div class="comments-section">
+                        <h4 class="comments-title">Comentarii ({{ post.comment_set.count }})</h4>
+
+                      {% for comment in post.comment_set.all %}
+    <div class="single-comment" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+        <span>
+            <strong>{{ comment.user.username }}</strong>: {{ comment.text }}
+        </span>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="comment-time" style="font-size: 0.85rem; color: #888;">{{ comment.created_at|date:"H:i" }}</span>
+
+            {% if request.user == comment.user %}
+                <a href="{% url 'feed:delete_comment' pk=comment.pk %}"
+                   title="Șterge comentariul"
+                   style="color: #666; display: flex; align-items: center; cursor: pointer; transition: color 0.2s;"
+                   onmouseover="this.style.color='#cf6679'"
+                   onmouseout="this.style.color='#666'">
+
+                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                       <polyline points="3 6 5 6 21 6"></polyline>
+                       <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                   </svg>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+{% empty %}
+    <p style="color: #666; font-style: italic; font-size: 0.9rem;">Fii primul care comentează!</p>
+{% endfor %}
+
+                        {% if user.is_authenticated %}
+                            <form method="POST" action="{% url 'feed:add_comment' pk=post.pk %}" class="comment-form">
+                                {% csrf_token %}
+                                <input type="text" name="text" class="comment-input" placeholder="Scrie un comentariu..." required>
+                                <button type="submit" class="comment-btn">Trimite</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+
+        {% else %}
+            <div style="text-align: center; padding: 50px;">
+                <p>Nu există postări de afișat momentan.</p>
                 {% if user.is_authenticated %}
-                    <form method="POST" action="{% url 'feed:add_comment' pk=post.pk %}" style="margin-top: 10px;">
-                        {% csrf_token %}
-                        <input type="text" name="text" placeholder="Scrie un comentariu..." required style="width: 70%; padding: 5px;">
-                        <button type="submit" style="padding: 5px 10px;">Comentează</button>
-                    </form>
+                    <a href="{% url 'feed:create_post' %}" class="create-btn">Fii primul care postează!</a>
                 {% endif %}
             </div>
-            </div>
-    {% endfor %}
+        {% endif %}
+    </div>
 
-{% else %}
-    <p>Nu există postări de afișat.</p>
-{% endif %}
+</body>
+</html>
